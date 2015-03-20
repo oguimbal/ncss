@@ -10,7 +10,7 @@ namespace NCss.Tests
         public void ReplaceHover()
         {
             var sheet = new CssParser().ParseSheet(".cl:hover,.cl2:hover{}.cl3:hover{}");
-            var found = sheet.Find<SimpleSelector>(x => x.FullName==":hover").ToArray();
+            var found = sheet.Find<Selector>(x => x ==":hover").ToArray();
             Assert.True(sheet.IsValid);
             Assert.AreEqual(3, found.Length);
             foreach (var f in found)
@@ -67,6 +67,16 @@ namespace NCss.Tests
                 f.Remove();
             Assert.True(sheet.IsValid);
             Assert.AreEqual(".cl1{other:null;}.cl2#id{}", sheet.ToString());
+        }
+
+        [Test]
+        public void RemoveInMedia()
+        {
+            var sheet = new CssParser().ParseSheet("@media test{.cl:hover{bg:red;}}");
+            foreach (var f in sheet.Find<Selector>(x => x == ":hover").ToArray())
+                f.Remove();
+            Assert.True(sheet.IsValid);
+            Assert.AreEqual("@media test{.cl{bg:red;}}", sheet.ToString());
         }
 
 
