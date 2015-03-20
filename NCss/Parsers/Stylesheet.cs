@@ -56,6 +56,15 @@ namespace NCss
             }
         }
 
+        public Stylesheet Clone<T>(Predicate<T> filter) where T : Selector
+        {
+            return Clone(x =>
+            {
+                var ast = x as T;
+                return ast != null && filter(ast);
+            });
+        }
+        
         public Stylesheet Clone(Predicate<Selector> filter=null)
         {
             var sh = new Stylesheet

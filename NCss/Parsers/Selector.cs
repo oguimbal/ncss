@@ -19,6 +19,15 @@ namespace NCss
         {
             return s == null ? null : s.ToString();
         }
+
+        public Selector Clone<T>(Predicate<T> filter) where T : Selector
+        {
+            return Clone(x =>
+            {
+                var ast = x as T;
+                return ast != null && filter(ast);
+            });
+        }
         
         public abstract Selector Clone(Predicate<Selector> filter);
     }

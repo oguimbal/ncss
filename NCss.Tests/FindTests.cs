@@ -48,6 +48,16 @@ namespace NCss.Tests
             Assert.AreEqual(".cl{background-image:url(other.png);}", sheet.ToString());
         }
 
+        [Test]
+        public void FindUrlAmongOthers()
+        {
+            var sheet = new CssParser().ParseSheet(".cl{background: transparent url(test.png)}");
+            foreach (var f in sheet.Find<CssSimpleValue>(x => x.IsFunction && x.Name == "url").ToArray())
+                f.ReplaceBy(new CssSimpleValue("url", "other.png"));
+            Assert.True(sheet.IsValid);
+            Assert.AreEqual(".cl{background:transparent url(other.png);}", sheet.ToString());
+        }
+
 
         [Test]
         public void RemoveClass()
