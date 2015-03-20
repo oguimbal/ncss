@@ -19,6 +19,8 @@ namespace NCss
         {
             return s == null ? null : s.ToString();
         }
+
+        public abstract Selector Clone();
     }
 
     public class MultiConditionSelector : Selector
@@ -57,6 +59,16 @@ namespace NCss
                         yield return sub;
                 }
             }
+        }
+
+        public override Selector Clone()
+        {
+            var s = new MultiConditionSelector
+            {
+                Conditions = Conditions == null ? null : Conditions.Select(x => x.Clone()).ToList(),
+            };
+            s.SetParsingSource(this);
+            return s;
         }
 
         public override bool IsValid
@@ -106,6 +118,16 @@ namespace NCss
                         yield return sub;
                 }
             }
+        }
+
+        public override Selector Clone()
+        {
+            var s = new SelectorList
+            {
+                Selectors = Selectors == null ? null : Selectors.Select(x => x.Clone()).ToList(),
+            };
+            s.SetParsingSource(this);
+            return s;
         }
 
         public override bool IsValid

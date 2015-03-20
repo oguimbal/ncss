@@ -17,6 +17,11 @@ namespace NCss
         {
             get { return false; }
         }
+
+        public override Selector Clone()
+        {
+            return this; // i'm immutable :)
+        }
     }
 
 

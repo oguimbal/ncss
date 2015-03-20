@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NCss.Parsers;
 using NUnit.Framework;
 
 namespace NCss.Tests
@@ -65,6 +66,19 @@ namespace NCss.Tests
             Assert.AreEqual(".c1,c3#c4,div{}", p.ToString(CssRestitution.RemoveErrors));
             Assert.AreEqual(".c1,c3#c4,div{}", p.ToString(CssRestitution.RemoveInvalid));
 
+        }
+
+
+
+        [Test]
+        public void UsedToThrow()
+        {
+
+            var p = new CssParser().ParseSheet(".test{0%{test:red}}");
+            Assert.AreEqual(".test{0%{test:red}}", p.ToString(CssRestitution.OriginalWhenErrorOrInvalid));
+            Assert.AreEqual(".test{}", p.ToString(CssRestitution.OnlyWhatYouUnderstood));
+            Assert.AreEqual(".test{}", p.ToString(CssRestitution.RemoveErrors));
+            Assert.AreEqual(".test{}", p.ToString(CssRestitution.RemoveInvalid));
         }
     }
 }

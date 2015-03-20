@@ -68,6 +68,8 @@ namespace NCss
             }
 
         }
+
+        public abstract Rule Clone();
     }
 
     internal class OrphanBlockRule : Rule
@@ -84,6 +86,11 @@ namespace NCss
         internal override BodyType ExpectedBodyType
         {
             get { return BodyType.Properties; }
+        }
+
+        public override Rule Clone()
+        {
+            return this; // i'm immutable :)
         }
     }
 
@@ -142,6 +149,18 @@ namespace NCss
                 foreach (var m in Selector.Find<T>(matching))
                     yield return m;
             }
+        }
+
+        public override Rule Clone()
+        {
+            var r = new ClassRule
+            {
+                ChildRules = ChildRules == null ? null : ChildRules.Select(x => x.Clone()).ToList(),
+                Selector = Selector == null ? null : Selector.Clone(),
+                Properties = Properties == null ? null : Properties.Select(x=>x.Clone()).ToList(),
+            };
+            r.SetParsingSource(this);
+            return r;
         }
     }
 
@@ -222,6 +241,18 @@ namespace NCss
                 yield return new TokenReference<T>(Selector as T, () => Selector = null, by => Selector = by as DirectiveSelector);
 
         }
+
+        public override Rule Clone()
+        {
+            var r = new DirectiveRule
+            {
+                ChildRules = ChildRules == null ? null : ChildRules.Select(x => x.Clone()).ToList(),
+                Selector = Selector == null ? null : (DirectiveSelector)Selector.Clone(),
+                Properties = Properties == null ? null : Properties.Select(x => x.Clone()).ToList(),
+            };
+            r.SetParsingSource(this);
+            return r;
+        }
     }
     public class NotParsableBlockRule : Rule
     {
@@ -239,6 +270,11 @@ namespace NCss
         internal override BodyType ExpectedBodyType
         {
             get { return BodyType.Properties; }
+        }
+
+        public override Rule Clone()
+        {
+            return this; // i'm immutable :)
         }
     }
 }

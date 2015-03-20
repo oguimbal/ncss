@@ -159,15 +159,18 @@ namespace NCss
                             return block;
                     }
 
-                    currentTokenIndex = _index;
-                    var rule = Parse<T>(true);
+                    if (!End)
+                    {
+                        currentTokenIndex = _index;
+                        var rule = Parse<T>(true);
+                        block.Add(rule);
+                    }
+
                     if (currentTokenIndex == _index)
                     {
                         // should never happen
                         throw new ParsingException("Nothing parsed");
                     }
-
-                    block.Add(rule);
 
                     if (End)
                     {

@@ -67,6 +67,18 @@ namespace NCss
                 }
             }
         }
+
+        public override Selector Clone()
+        {
+            var s = new ChildSelector
+            {
+                Child = Child == null ? null : Child.Clone(),
+                Parent = Parent == null ? null : Parent.Clone(),
+                Type = Type,
+            };
+            s.SetParsingSource(this);
+            return s;
+        }
     }
 
 

@@ -133,6 +133,17 @@ namespace NCss
                 }
             }
         }
+
+        protected override CssValue CloneInternal()
+        {
+            var v = new CssSimpleValue
+            {
+                Arguments = Arguments == null ? null : Arguments.Select(x => x.Clone()).ToList(),
+                Name = Name,
+            };
+            v.SetParsingSource(this);
+            return v;
+        }
     }
 
 

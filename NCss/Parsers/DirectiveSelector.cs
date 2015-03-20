@@ -91,6 +91,17 @@ namespace NCss
                 }
             }
         }
+
+        public override Selector Clone()
+        {
+            var s = new DirectiveSelector
+            {
+                Arguments = Arguments,
+                Name = Name,
+            };
+            s.SetParsingSource(this);
+            return s;
+        }
     }
 
 

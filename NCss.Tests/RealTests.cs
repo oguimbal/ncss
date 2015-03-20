@@ -225,6 +225,9 @@ namespace NCss.Tests
                 }
             }
 
+            var clone = p.Clone();
+            Assert.AreEqual(output, clone.ToString());
+
             return p;
         }
     }

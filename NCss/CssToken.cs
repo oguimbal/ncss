@@ -26,6 +26,14 @@ namespace NCss
         int fromIndex;
         int toIndex;
 
+        internal void SetParsingSource(CssToken sameAs)
+        {
+            this.globalCss = sameAs.globalCss;
+            this.fromIndex = sameAs.fromIndex;
+            this.toIndex = sameAs.toIndex;
+            this.Errors = sameAs.Errors==null?null: new List<CssParsingError>(sameAs.Errors);
+        }
+
         [DebuggerStepThrough]
         internal void SetParsingSource(string globalCss, int fromIndex, int toIndex, List<CssParsingError> errors)
         {

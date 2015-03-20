@@ -112,6 +112,22 @@ namespace NCss
                 }
             }
         }
+
+        public virtual Property Clone()
+        {
+            var p = new Property
+            {
+                BangHackName = BangHackName,
+                HasSlash0 = HasSlash0,
+                HasSlash9 = HasSlash9,
+                HasStar = HasStar,
+                Important = Important,
+                Name = Name,
+                Values = Values == null ? null : Values.Select(x => x.Clone()).ToList(),
+            };
+            p.SetParsingSource(this);
+            return p;
+        }
     }
 
     public class NotParsableProperty : Property
@@ -119,6 +135,11 @@ namespace NCss
         public override bool IsValid
         {
             get { return false; }
+        }
+
+        public override Property Clone()
+        {
+            return this; // i'm immutable
         }
     }
 

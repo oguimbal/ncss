@@ -55,6 +55,16 @@ namespace NCss
                 }
             }
         }
+
+        public Stylesheet Clone()
+        {
+            var sh = new Stylesheet
+            {
+                Rules = Rules == null ? null : Rules.Select(x => x.Clone()).ToList(),
+            };
+            sh.SetParsingSource(this);
+            return sh;
+        }
     }
 
 

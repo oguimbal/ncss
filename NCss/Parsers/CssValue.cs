@@ -18,6 +18,19 @@ namespace NCss
         {
             return val == null ? null : val.ToString();
         }
+
+        protected abstract CssValue CloneInternal();
+
+        public CssValue Clone()
+        {
+            var cl = CloneInternal();
+            if (ReferenceEquals(cl, this))
+                return cl;
+            cl.SetParsingSource(this);
+            cl.HasComma = HasComma;
+            cl.HasParenthesis = HasParenthesis;
+            return cl;
+        }
     }
 
     public class CssArithmeticOperation : CssValue
@@ -83,6 +96,18 @@ namespace NCss
                 }
 
             }
+        }
+
+        protected override CssValue CloneInternal()
+        {
+            var v = new CssArithmeticOperation
+            {
+                Left = Left == null ? null : Left.Clone(),
+                Right = Right == null ? null : Right.Clone(),
+                Operation = Operation,
+            };
+            v.SetParsingSource(this);
+            return v;
         }
     }
 

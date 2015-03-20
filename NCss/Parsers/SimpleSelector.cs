@@ -226,6 +226,19 @@ namespace NCss
                 }
             }
         }
+
+        public override Selector Clone()
+        {
+            var s = new SimpleSelector
+            {
+                Name = Name,
+                selectorArgument = selectorArgument == null ? null : selectorArgument.Clone(),
+                argument = argument == null ? null : argument.Clone(),
+                SelectorType = SelectorType,
+            };
+            s.SetParsingSource(this);
+            return s;
+        }
     }
 
 

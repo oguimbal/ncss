@@ -56,6 +56,17 @@ namespace NCss
         public string Attribute { get; set; }
         public Type ConditionType { get; set; }
         public string Value { get; set; }
+        public override Selector Clone()
+        {
+            var s = new AttributeCondition
+            {
+                Attribute = Attribute,
+                ConditionType = ConditionType,
+                Value = Value,
+            };
+            s.SetParsingSource(this);
+            return s;
+        }
     }
 
 
