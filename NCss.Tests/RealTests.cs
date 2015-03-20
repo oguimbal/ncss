@@ -121,6 +121,19 @@ namespace NCss.Tests
             Assert.AreEqual(0, parser.Errors.Count);
             Assert.True(p.IsValid, "invalid css");
         }
+
+        [Test]
+        public void InvalidOscaro()
+        {
+
+            var input = ".lvml{behavior:url(#default#VML);display:inline-block;position:absolute;}";
+            var parser = new StylesheetParser();
+            parser.SetContext(input);
+            var p = parser.DoParse();
+            Assert.True(parser.End);
+            Assert.AreEqual(0, parser.Errors.Count);
+            Assert.True(p.IsValid, "invalid css");
+        }
         
         [Test]
         public void LokadBootstrap()
@@ -157,6 +170,12 @@ namespace NCss.Tests
         public void Normalize()
         {
             TestFile("normalize", false);
+        }
+
+        [Test]
+        public void Oscaro()
+        {
+            TestFile("oscaro", false);
         }
 
         [Test]

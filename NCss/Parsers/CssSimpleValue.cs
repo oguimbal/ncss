@@ -58,6 +58,8 @@ namespace NCss
                         if (!Regex.IsMatch(Value, @"^progid:[a-zA-Z_\-][a-zA-Z0-9_\-\.]*$"))
                             return false;
                     }
+                    else if (Value == "url")
+                        return Arguments.Count == 1;
                     else if (!Regex.IsMatch(Value, @"^[a-zA-Z_\-][a-zA-Z0-9_\-]*$"))
                         return false;
                     return Arguments.All(a => a.IsValid);
