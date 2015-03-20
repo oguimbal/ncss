@@ -11,6 +11,13 @@ namespace NCss
     {
         public bool HasParenthesis { get; set; }
         public bool HasComma { get; set; }
+
+        public abstract IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching) where T:CssToken;
+
+        public static implicit operator string(CssValue val)
+        {
+            return val == null ? null : val.ToString();
+        }
     }
 
     public class CssArithmeticOperation : CssValue
@@ -45,6 +52,38 @@ namespace NCss
         public CssValue Left { get; set; }
         public CssValue Right { get; set; }
         public char Operation { get; set; }
+
+        public override IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching)
+        {
+            if (Left != null)
+            {
+                var asT = Left as T;
+                if (asT != null && matching(asT))
+                {
+                    yield return new TokenReference<T>(asT, () => Left = null, by => Left = by as CssValue);
+                }
+                else
+                {
+                    foreach (var m in Left.Find(matching))
+                        yield return m;
+                }
+
+            }
+            if (Right != null)
+            {
+                var asT = Right as T;
+                if (asT != null && matching(asT))
+                {
+                    yield return new TokenReference<T>(asT, () => Right = null, by => Right = by as CssValue);
+                }
+                else
+                {
+                    foreach (var m in Right.Find(matching))
+                        yield return m;
+                }
+
+            }
+        }
     }
 
 

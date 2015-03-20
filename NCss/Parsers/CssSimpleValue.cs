@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using NCss.Parsers;
 
 // ReSharper disable once CheckNamespace
 namespace NCss
@@ -11,19 +13,45 @@ namespace NCss
     /// </summary>
     public class CssSimpleValue : CssValue
     {
-        public string Value { get; set; }
+        public CssSimpleValue() { }
+
+        public CssValue Parse(string cssValue)
+        {
+            var parser = new CssValueParser();
+            parser.SetContext(cssValue);
+            var val = parser.DoParse();
+            return val;
+        }
+
+        public CssSimpleValue(string name, params string[] arguments)
+        {
+            Name = name;
+            if (arguments != null && arguments.Length > 0)
+                Arguments = arguments.Select(x => (CssValue) new CssSimpleValue(x)).ToList();
+        }
+
+        public CssSimpleValue(string name, CssValue[] arguments)
+        {
+            Name = name;
+            if (arguments != null && arguments.Length > 0)
+                Arguments = arguments.ToList();
+        }
+
+        public string Name { get; set; }
 
         /// <summary>
         /// Provided if that's a function call
         /// </summary>
         public List<CssValue> Arguments { get; set; }
 
+        public bool IsFunction { get { return Arguments != null && Arguments.Count > 0; } }
+
         internal override void AppendTo(StringBuilder sb)
         {
             if (HasParenthesis)
                 sb.Append('(');
-            if (!string.IsNullOrWhiteSpace(Value))
-                sb.Append(Value);
+            if (!string.IsNullOrWhiteSpace(Name))
+                sb.Append(Name);
             if (Arguments != null)
             {
                 sb.Append('(');
@@ -48,36 +76,61 @@ namespace NCss
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(Value))
+                if (string.IsNullOrWhiteSpace(Name))
                     return false;
                 if (Arguments != null)
                 {
                     // check that it is a function name
-                    if (Value.StartsWith("progid:"))
+                    if (Name.StartsWith("progid:"))
                     {
-                        if (!Regex.IsMatch(Value, @"^progid:[a-zA-Z_\-][a-zA-Z0-9_\-\.]*$"))
+                        if (!Regex.IsMatch(Name, @"^progid:[a-zA-Z_\-][a-zA-Z0-9_\-\.]*$"))
                             return false;
                     }
-                    else if (Value == "url")
+                    else if (Name == "url")
                         return Arguments.Count == 1;
-                    else if (!Regex.IsMatch(Value, @"^[a-zA-Z_\-][a-zA-Z0-9_\-]*$"))
+                    else if (!Regex.IsMatch(Name, @"^[a-zA-Z_\-][a-zA-Z0-9_\-]*$"))
                         return false;
                     return Arguments.All(a => a.IsValid);
                 }
 
-                if (Value[0] == '#')
+                if (Name[0] == '#')
                 {
                     // is valid color ?
-                    return Regex.IsMatch(Value, @"^#([a-fA-F0-9]{3}){1,2}$");
+                    return Regex.IsMatch(Name, @"^#([a-fA-F0-9]{3}){1,2}$");
                 }
 
                 // is valid string ?
-                if (Value[0] == '\'')
-                    return Value.Length > 1 && Value[Value.Length - 1] == '\'';
-                if (Value[0] == '"')
-                    return Value.Length > 1 && Value[Value.Length - 1] == '"';
+                if (Name[0] == '\'')
+                    return Name.Length > 1 && Name[Name.Length - 1] == '\'';
+                if (Name[0] == '"')
+                    return Name.Length > 1 && Name[Name.Length - 1] == '"';
 
                 return true;
+            }
+        }
+
+        public override IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching)
+        {
+            if(Arguments == null)
+                yield break;
+            foreach (var a in Arguments)
+            {
+                var cv = a;
+                var asT = a as T;
+                if (asT != null && matching(asT))
+                {
+                    yield return new TokenReference<T>(asT, () => Arguments.Remove(cv), by =>
+                    {
+                        var i = Arguments.IndexOf(cv);
+                        if (i >= 0)
+                            Arguments[i] = by as CssValue;
+                    });
+                }
+                else
+                {
+                    foreach (var subm in a.Find(matching))
+                        yield return subm;
+                }
             }
         }
     }
@@ -109,7 +162,7 @@ namespace NCss
                 }
 
                 if (End)
-                    return new CssSimpleValue {Value = value,};
+                    return new CssSimpleValue {Name = value,};
 
                 List<CssValue> argument = null;
 
@@ -126,7 +179,7 @@ namespace NCss
                         {
                             new CssSimpleValue
                             {
-                                Value = SkipUntil(')', '\r', '\n', '}')
+                                Name = SkipUntil(')', '\r', '\n', '}')
                             }
                         };
                     }
@@ -167,7 +220,7 @@ namespace NCss
 
                 return new CssSimpleValue
                 {
-                    Value = value,
+                    Name = value,
                     HasComma = hasComma,
                     Arguments = argument,
                 };

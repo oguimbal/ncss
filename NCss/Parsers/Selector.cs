@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,6 +9,16 @@ namespace NCss
 {
     public abstract class Selector : CssToken
     {
+        public virtual IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching) where T : CssToken
+        {
+            yield break;
+        }
+
+
+        public static implicit operator String(Selector s)
+        {
+            return s == null ? null : s.ToString();
+        }
     }
 
     public class MultiConditionSelector : Selector
@@ -23,6 +34,29 @@ namespace NCss
         {
             foreach (var c in Conditions)
                 c.AppendToWithOptions(sb, option);
+        }
+
+        public override IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching)
+        {
+            if(Conditions == null)
+                yield break;
+            foreach (var c in Conditions)
+            {
+                var vc = c;
+                var ast = c as T;
+                if (ast != null && matching(ast))
+                    yield return new TokenReference<T>(ast, () => Conditions.Remove(vc), by =>
+                    {
+                        var i = Conditions.IndexOf(vc);
+                        if (i >= 0)
+                            Conditions[i] = by as Selector;
+                    });
+                else
+                {
+                    foreach (var sub in c.Find(matching))
+                        yield return sub;
+                }
+            }
         }
 
         public override bool IsValid
@@ -48,6 +82,29 @@ namespace NCss
                     sb.Append(',');
                 notFirst = true;
                 s.AppendToWithOptions(sb, option);
+            }
+        }
+
+        public override IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching)
+        {
+            if(Selectors == null)
+                yield break;
+            foreach (var s in Selectors)
+            {
+                var cs = s;
+                var ast = s as T;
+                if (ast != null && matching(ast))
+                    yield return new TokenReference<T>(ast, () => Selectors.Remove(cs), by =>
+                    {
+                        var i = Selectors.IndexOf(cs);
+                        if (i >= 0)
+                            Selectors[i] = by as Selector;
+                    });
+                else
+                {
+                    foreach (var sub in s.Find(matching))
+                        yield return sub;
+                }
             }
         }
 

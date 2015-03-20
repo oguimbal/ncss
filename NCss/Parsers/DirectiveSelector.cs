@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 // ReSharper disable once CheckNamespace
 namespace NCss
 {
-    public class DirectiveSelector : Selector
+    public sealed class DirectiveSelector : Selector
     {
         internal override void AppendTo(StringBuilder sb)
         {

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -26,7 +28,59 @@ namespace NCss
             foreach (var r in Rules.Where(x => x != null))
                 r.AppendToWithOptions(sb, option);
         }
+
+        public IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching, Search where = Search.All)
+            where T:CssToken
+        {
+            if(Rules == null)
+                yield break;
+
+            foreach (var r in Rules)
+            {
+                var rc = r;
+                var asT = r as T;
+                if (asT != null && matching(asT))
+                    yield return new TokenReference<T>(asT, () => Rules.Remove(rc), by =>
+                    {
+                        var i = Rules.IndexOf(rc);
+                        if (i >= 0)
+                            Rules[i] = by as Rule;
+                    });
+                else
+                {
+                    foreach (var sub in r.Find(matching, where))
+                    {
+                        yield return sub;
+                    }
+                }
+            }
+        }
     }
+
+
+    public class TokenReference<T>
+            where T : CssToken
+    {
+        public T Token { get; private set; }
+        public Action Remove { get; private set; }
+        public Action<T> ReplaceBy { get; private set; }
+
+        internal TokenReference(T token, Action remove, Action<T> replaceBy)
+        {
+            Token = token;
+            Remove = remove;
+            ReplaceBy = replaceBy;
+        }
+    }
+    [Flags]
+    public enum Search
+    {
+        InSelectors = 1,
+        InProperties = 1<<1,
+        InPropertyValues = InProperties | 1<<2,
+        All = InSelectors | InPropertyValues,
+    }
+
 
 
 

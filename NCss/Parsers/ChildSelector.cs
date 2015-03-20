@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 // ReSharper disable once CheckNamespace
@@ -38,6 +39,32 @@ namespace NCss
                 if (Child != null && !Child.IsValid)
                     return false;
                 return Parent != null || Child != null;
+            }
+        }
+
+        public override IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching)
+        {
+            if (Child != null)
+            {
+                var ast = Child as T;
+                if (ast != null && matching(ast))
+                    yield return new TokenReference<T>(ast, () => Child = null, by => Child = by as Selector);
+                else
+                {
+                    foreach (var sub in Child.Find(matching))
+                        yield return sub;
+                }
+            }
+            if (Parent != null)
+            {
+                var ast = Parent as T;
+                if (ast != null && matching(ast))
+                    yield return new TokenReference<T>(ast, () => Parent = null, by => Parent = by as Selector);
+                else
+                {
+                    foreach (var sub in Parent.Find(matching))
+                        yield return sub;
+                }
             }
         }
     }

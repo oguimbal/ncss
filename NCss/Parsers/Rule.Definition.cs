@@ -21,6 +21,53 @@ namespace NCss
             Properties,
             ChildRules,
         }
+
+        protected virtual IEnumerable<TokenReference<T>> InnerFind<T>(Predicate<T> matching)
+            where T : CssToken
+        {
+            yield break;
+        }
+
+        public IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching, Search where)
+            where T:CssToken
+        {
+            if (Properties != null && where.HasFlag(Search.InProperties))
+            {
+                foreach (Property p in Properties)
+                {
+                        var asT = p as T;
+                    if (asT != null && matching(asT))
+                        yield return new TokenReference<T>(asT, () => Properties.Remove(p), other =>
+                        {
+                            var i = Properties.IndexOf(p);
+                            if (i >= 0)
+                                Properties[i] = other as Property;
+                        });
+                    else if (where.HasFlag(Search.InPropertyValues))
+                    {
+                        foreach (var subv in p.Find<T>(matching))
+                            yield return subv;
+                    }
+                }
+            }
+
+            if (ChildRules != null)
+            {
+                foreach (var match in ChildRules.SelectMany(p => p.Find<T>(matching,where)))
+                {
+                    yield return match;
+                }
+            }
+
+            if (where.HasFlag(Search.InSelectors))
+            {
+                foreach (var match in InnerFind<T>(matching))
+                {
+                    yield return match;
+                }
+            }
+
+        }
     }
 
     internal class OrphanBlockRule : Rule
@@ -81,6 +128,20 @@ namespace NCss
         internal override BodyType ExpectedBodyType
         {
             get { return BodyType.Properties; }
+        }
+
+        protected override IEnumerable<TokenReference<T>> InnerFind<T>(Predicate<T> matching)
+        {
+            var asT = Selector as T;
+            if (asT != null && matching(asT))
+            {
+                yield return new TokenReference<T>(asT, () => Selector = null, by => Selector = by as Selector);
+            }
+            else
+            {
+                foreach (var m in Selector.Find<T>(matching))
+                    yield return m;
+            }
         }
     }
 
@@ -150,6 +211,16 @@ namespace NCss
         internal override BodyType ExpectedBodyType
         {
             get { return Selector == null ? BodyType.None : Selector.ExpectedBodyType; }
+        }
+
+        protected override IEnumerable<TokenReference<T>> InnerFind<T>(Predicate<T> matching)
+        {
+            if(Selector == null || typeof(T) != typeof(DirectiveSelector))
+                yield break;
+            var st = Selector as T;
+            if (matching(st))
+                yield return new TokenReference<T>(Selector as T, () => Selector = null, by => Selector = by as DirectiveSelector);
+
         }
     }
     public class NotParsableBlockRule : Rule

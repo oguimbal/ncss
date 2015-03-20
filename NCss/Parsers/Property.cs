@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 // ReSharper disable once CheckNamespace
 namespace NCss
@@ -84,6 +86,32 @@ namespace NCss
         /// Only parsed successuflly by IE7 and below : "property:value!ie7;"
         /// </summary>
         public string BangHackName { get; set; }
+
+        public IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching) where T:CssToken
+        {
+            if(Values == null)
+                yield break;
+
+            foreach (var v in Values)
+            {
+                var vc = v;
+                var asT = v as T;
+                if (asT != null && matching(asT))
+                {
+                    yield return new TokenReference<T>(asT, () => Values.Remove(vc), by =>
+                    {
+                        var i = Values.IndexOf(vc);
+                        if (i >= 0)
+                            Values[i] = @by as CssValue;
+                    });
+                }
+                else
+                {
+                    foreach (var sub in v.Find(matching))
+                        yield return sub;
+                }
+            }
+        }
     }
 
     public class NotParsableProperty : Property

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 // ReSharper disable once CheckNamespace
@@ -7,7 +8,54 @@ namespace NCss
 
     public class SimpleSelector : Selector
     {
+        public SimpleSelector() { }
 
+        public SimpleSelector(string fulname)
+        {
+            FullName = fulname;
+        }
+        public string FullName
+        {
+            get
+            {
+                if (SelectorType == Type.PseudoElement)
+                    return "::" + Name;
+                if (SelectorType > 0)
+                    return ((char) SelectorType) + Name;
+                return Name;
+            }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    Name = null;
+                    selectorType = Type.ElementType;
+                    return;
+                }
+                if (value.StartsWith("::"))
+                {
+                    selectorType = Type.PseudoElement;
+                    Name = value.Substring(2);
+                    return;
+                }
+
+                if (value.EndsWith("%"))
+                {
+                    selectorType = Type.Percentage;
+                    Name = value.Substring(0, value.Length - 1);
+                    return;
+                }
+
+                if(Enum.IsDefined(typeof(Type), (int)value[0]))
+                {
+                    selectorType = (Type) value[0];
+                    Name = value.Substring(1);
+                    return;
+                }
+                selectorType = Type.ElementType;
+                Name = value;
+            }
+        }
         public enum Type
         {
             ElementType = -1,
@@ -124,11 +172,7 @@ namespace NCss
 
         internal override void AppendTo(StringBuilder sb)
         {
-            if (SelectorType == Type.PseudoElement)
-                sb.Append("::");
-            else if(SelectorType > 0)
-                sb.Append((char) SelectorType);
-            sb.Append(Name);
+            sb.Append(FullName);
             if (HasArgument)
             {
                 sb.Append('(');
@@ -153,6 +197,33 @@ namespace NCss
                 if (SelectorArgument != null)
                     return SelectorArgument.IsValid;
                 return Argument.IsValid;
+            }
+        }
+
+        public override IEnumerable<TokenReference<T>> Find<T>(Predicate<T> matching)
+        {
+            if (Argument != null)
+            {
+                var ast = Argument as T;
+                if (ast != null && matching(ast))
+                    yield return new TokenReference<T>(ast, () => Argument = null, by => Argument = by as CssValue);
+                else
+                {
+                    foreach (var m in Argument.Find(matching))
+                        yield return m;
+                }
+            }
+
+            if (SelectorArgument != null)
+            {
+                var ast = SelectorArgument as T;
+                if (ast != null && matching(ast))
+                    yield return new TokenReference<T>(ast, () => SelectorArgument = null, by => SelectorArgument = by as Selector);
+                else
+                {
+                    foreach (var m in SelectorArgument.Find(matching))
+                        yield return m;
+                }
             }
         }
     }

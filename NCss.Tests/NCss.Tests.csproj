@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentParserTests.cs" />
+    <Compile Include="FindTests.cs" />
     <Compile Include="HacksTests.cs" />
     <Compile Include="BlockParserTests.cs" />
     <Compile Include="ParserBaseTests.cs" />
