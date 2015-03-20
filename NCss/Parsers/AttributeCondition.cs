@@ -20,13 +20,9 @@ namespace NCss
 
         internal override void AppendTo(StringBuilder sb)
         {
-            sb.Append('[');
-            if (!string.IsNullOrWhiteSpace(InvalidCondition))
-            {
-                sb.Append(InvalidCondition);
-                sb.Append(']');
+            if(HasError)
                 return;
-            }
+            sb.Append('[');
 
             if (!string.IsNullOrWhiteSpace(Attribute))
                 sb.Append(Attribute);
@@ -51,13 +47,12 @@ namespace NCss
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(InvalidCondition))
+                if (HasError)
                     return false;
                 return !string.IsNullOrWhiteSpace(Attribute) && Enum.IsDefined(typeof (Type), ConditionType);
             }
         }
 
-        public string InvalidCondition { get; set; }
         public string Attribute { get; set; }
         public Type ConditionType { get; set; }
         public string Value { get; set; }
@@ -89,10 +84,7 @@ namespace NCss
                 {
                     AddError(ErrorCode.ExpectingToken, "condition");
                     var cond = SkipTillEnd();
-                    return new AttributeCondition
-                    {
-                        InvalidCondition = cond,
-                    };
+                    return new AttributeCondition();
                 }
 
                 if (End || CurrentChar == ']')
@@ -126,10 +118,8 @@ namespace NCss
                         if (NextChar != '=')
                         {
                             AddError(ErrorCode.ExpectingToken, "=");
-                            return new AttributeCondition
-                            {
-                                InvalidCondition = attr + SkipTillEnd(),
-                            };
+                            SkipTillEnd();
+                            return new AttributeCondition();
                         }
                         type = (AttributeCondition.Type) CurrentChar;
                         sep = CurrentChar + "=";
@@ -137,10 +127,8 @@ namespace NCss
                         break;
                     default:
                         AddError(ErrorCode.UnexpectedToken, CurrentChar.ToString());
-                        return new AttributeCondition
-                        {
-                            InvalidCondition = attr + SkipTillEnd(),
-                        };
+                        SkipTillEnd();
+                        return new AttributeCondition();
                 }
 
                 var val = PickString();
@@ -148,10 +136,8 @@ namespace NCss
                 {
                     var ret = SkipTillEnd();
                     AddError(ErrorCode.ExpectingValue, ret);
-                    return new AttributeCondition
-                    {
-                        InvalidCondition = attr + sep + SkipTillEnd()
-                    };
+                    SkipTillEnd();
+                    return new AttributeCondition();
                 }
 
                 if (End)
@@ -161,10 +147,8 @@ namespace NCss
                 else if (CurrentChar != ']')
                 {
                     AddError(ErrorCode.ExpectingToken, "]");
-                    return new AttributeCondition
-                    {
-                        InvalidCondition = attr + sep + val + SkipTillEnd()
-                    };
+                    SkipTillEnd();
+                    return new AttributeCondition();
                 }
 
                 Index++; // skip ']'
