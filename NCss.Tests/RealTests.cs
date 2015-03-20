@@ -154,11 +154,16 @@ namespace NCss.Tests
         }
 
         [Test]
+        public void Normalize()
+        {
+            TestFile("normalize", false);
+        }
+
+        [Test]
         public void Foundation()
         {
            TestFile("foundation.min");
            TestFile("foundation",false);
-           TestFile("normalize",false);
         }
 
         Stylesheet TestFile(string file, bool testSimilarities=true)
