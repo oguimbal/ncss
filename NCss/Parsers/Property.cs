@@ -88,13 +88,6 @@ namespace NCss
 
     public class NotParsableProperty : Property
     {
-        public string InvalidPropertyContent { get; private set; }
-
-        public NotParsableProperty(string invalid)
-        {
-            InvalidPropertyContent = invalid;
-        }
-
         public override bool IsValid
         {
             get { return false; }
@@ -132,19 +125,20 @@ namespace NCss
                 if (name == null)
                 {
                     AddError(ErrorCode.ExpectingToken, "property name");
-                    return new NotParsableProperty(SkipTillEnd());
+                    SkipTillEnd();
+                    return new NotParsableProperty();
                 }
 
                 if (End)
                 {
                     AddError(ErrorCode.UnexpectedEnd, "property value");
-                    return new NotParsableProperty(name);
+                    return new NotParsableProperty();
                 }
 
                 if (CurrentChar != ':')
                 {
                     AddError(ErrorCode.ExpectingToken, ":");
-                    return new NotParsableProperty(name + SkipTillEnd());   
+                    return new NotParsableProperty();
                 }
 
                 Index++;

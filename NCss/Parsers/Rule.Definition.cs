@@ -27,9 +27,8 @@ namespace NCss
     {
         internal override void AppendTo(StringBuilder sb)
         {
-            sb.Append(this.OriginalToken);
         }
-
+        
         public override bool IsValid
         {
             get { return false; }
@@ -155,16 +154,10 @@ namespace NCss
     }
     public class NotParsableBlockRule : Rule
     {
-        public string Css { get; private set; }
-
-        public NotParsableBlockRule(string css)
-        {
-            Css = css;
-        }
 
         internal override void AppendTo(StringBuilder sb)
         {
-            throw new NotImplementedException();
+            // do nothing
         }
 
         public override bool IsValid

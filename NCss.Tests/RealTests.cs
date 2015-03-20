@@ -58,9 +58,10 @@ namespace NCss.Tests
             parser.SetContext(input);
             var p = parser.DoParse();
             Assert.True(parser.End);
-            Assert.AreEqual(0, parser.Errors.Count);
+            Assert.AreEqual(1, parser.Errors.Count);
             Assert.False(p.IsValid, "must be invalid css");
-            Assert.AreEqual(input, p.ToString());
+            Assert.AreEqual(".class{color:red;}", p.ToString());
+            Assert.AreEqual(input, p.ToString(CssRestitution.OriginalWhenErrorOrInvalid));
             Assert.AreEqual(2, p.Rules.Count);
             Assert.IsInstanceOf<OrphanBlockRule>(p.Rules[0]);
             Assert.IsInstanceOf<ClassRule>(p.Rules[1]);

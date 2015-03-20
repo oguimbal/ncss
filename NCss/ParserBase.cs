@@ -138,8 +138,23 @@ namespace NCss
                         if (nestedBlock)
                             return block;
                         // parasite '}' ... let's continue parsing till we die
-                        if (!expectBlockEnd) 
-                            AddError(ErrorCode.UnexpectedToken, "}");
+                        if (!expectBlockEnd)
+                        {
+                            var err = AddError(ErrorCode.UnexpectedToken, "}");
+
+                            if (typeof(T) == typeof(Rule) || typeof(Rule).IsAssignableFrom(typeof(T)))
+                            {
+                                var br = new NotParsableBlockRule();
+                                br.SetParsingSource(css, _index-1, _index, new List<CssParsingError> { err });
+                                block.Add((T)(object)br);
+                            }
+                            else if (typeof(T) == typeof(Property) || typeof(Property).IsAssignableFrom(typeof(T)))
+                            {
+                                var pr = new NotParsableProperty();
+                                pr.SetParsingSource(css, _index-1, _index, new List<CssParsingError> { err });
+                                block.Add((T)(object)pr);
+                            }
+                        }
                         else // effective block end
                             return block;
                     }
@@ -164,7 +179,7 @@ namespace NCss
             }
             catch (BlockMismatchException)
             {
-                AddError(ErrorCode.BlockMismatch, "unexpected block token");
+                var err = AddError(ErrorCode.BlockMismatch, "unexpected block token");
 
                 var invalid = css.Substring(currentTokenIndex, _index - currentTokenIndex);
 
@@ -178,11 +193,15 @@ namespace NCss
 
                 if (typeof(T) == typeof(Rule) || typeof(Rule).IsAssignableFrom(typeof(T)))
                 {
-                    block.Add((T) (object) new NotParsableBlockRule(invalid));
+                    var br = new NotParsableBlockRule();
+                    br.SetParsingSource(css, currentTokenIndex, _index, new List<CssParsingError> { err });
+                    block.Add((T)(object)br);
                 }
                 else if (typeof(T) == typeof(Property) || typeof(Property).IsAssignableFrom(typeof(T)))
                 {
-                    block.Add((T) (object) new NotParsableProperty(invalid));
+                    var pr = new NotParsableProperty();
+                    pr.SetParsingSource(css, currentTokenIndex, _index, new List<CssParsingError> { err });
+                    block.Add((T) (object) pr);
                 }
                 else
                     throw new ParsingException("No handler for " + typeof (T));
@@ -610,9 +629,11 @@ namespace NCss
         }
 
         public readonly List<CssParsingError> Errors = new List<CssParsingError>();
-        protected void AddError(ErrorCode code, string details)
+        protected CssParsingError AddError(ErrorCode code, string details)
         {
-            Errors.Add(new CssParsingError(code, details, _index, ToString()));
+            var err = new CssParsingError(code, details, _index, ToString());
+            Errors.Add(err);
+            return err;
         }
 
         public sealed override string ToString()

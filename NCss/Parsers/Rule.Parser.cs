@@ -36,6 +36,7 @@ namespace NCss
                     }
                     case '{':
                         // meaningless block
+                        AddError(ErrorCode.UnexpectedToken, "{");
                         rule = new OrphanBlockRule();
                         break;
                     case '}':
