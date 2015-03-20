@@ -227,12 +227,22 @@ namespace NCss
             }
         }
 
-        public override Selector Clone()
+        public override Selector Clone(Predicate<Selector> filter)
         {
+            if (filter != null)
+            {
+                if (selectorArgument != null)
+                {
+                    if (!filter(selectorArgument) && !filter(this))
+                        return null;
+                }
+                else if (!filter(this))
+                    return null;
+            }
             var s = new SimpleSelector
             {
                 Name = Name,
-                selectorArgument = selectorArgument == null ? null : selectorArgument.Clone(),
+                selectorArgument = selectorArgument == null ? null : selectorArgument.Clone(null),
                 argument = argument == null ? null : argument.Clone(),
                 SelectorType = SelectorType,
             };

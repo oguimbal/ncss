@@ -56,11 +56,11 @@ namespace NCss
             }
         }
 
-        public Stylesheet Clone()
+        public Stylesheet Clone(Predicate<Selector> filter=null)
         {
             var sh = new Stylesheet
             {
-                Rules = Rules == null ? null : Rules.Select(x => x.Clone()).ToList(),
+                Rules = Rules == null ? null : Rules.Select(x => x.Clone(filter)).Where(x=>x!=null).ToList(),
             };
             sh.SetParsingSource(this);
             return sh;

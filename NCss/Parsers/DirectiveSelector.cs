@@ -92,8 +92,10 @@ namespace NCss
             }
         }
 
-        public override Selector Clone()
+        public override Selector Clone(Predicate<Selector> filter)
         {
+            if (filter != null && !filter(this))
+                return null;
             var s = new DirectiveSelector
             {
                 Arguments = Arguments,

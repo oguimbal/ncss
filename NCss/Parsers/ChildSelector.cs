@@ -68,14 +68,24 @@ namespace NCss
             }
         }
 
-        public override Selector Clone()
+        public override Selector Clone(Predicate<Selector> filter)
         {
+            if (filter != null && (Child == null || Parent == null))
+                return null;
             var s = new ChildSelector
             {
-                Child = Child == null ? null : Child.Clone(),
-                Parent = Parent == null ? null : Parent.Clone(),
+                Child = Child == null ? null : Child.Clone(filter),
+                Parent = Parent == null ? null : Parent.Clone(filter),
                 Type = Type,
             };
+            if (filter != null)
+            {
+                if (s.Child == null && s.Parent == null)
+                    return null;
+                s.Child = s.Child ?? Child.Clone(null);
+                s.Parent = s.Parent ?? Parent.Clone(null);
+            }
+            
             s.SetParsingSource(this);
             return s;
         }

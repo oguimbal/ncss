@@ -19,8 +19,8 @@ namespace NCss
         {
             return s == null ? null : s.ToString();
         }
-
-        public abstract Selector Clone();
+        
+        public abstract Selector Clone(Predicate<Selector> filter);
     }
 
     public class MultiConditionSelector : Selector
@@ -61,11 +61,19 @@ namespace NCss
             }
         }
 
-        public override Selector Clone()
+
+        public override Selector Clone(Predicate<Selector> filter)
         {
+            if (filter != null)
+            {
+                if (Conditions == null)
+                    return null;
+                if (Conditions.All(x => x.Clone(filter) == null))
+                    return null;
+            }
             var s = new MultiConditionSelector
             {
-                Conditions = Conditions == null ? null : Conditions.Select(x => x.Clone()).ToList(),
+                Conditions = Conditions == null ? null : Conditions.Select(x => x.Clone(null)).ToList(),
             };
             s.SetParsingSource(this);
             return s;
@@ -120,12 +128,16 @@ namespace NCss
             }
         }
 
-        public override Selector Clone()
+        public override Selector Clone(Predicate<Selector> filter)
         {
             var s = new SelectorList
             {
-                Selectors = Selectors == null ? null : Selectors.Select(x => x.Clone()).ToList(),
+                Selectors = Selectors == null ? null : Selectors.Select(x => x.Clone(filter)).Where(x=>x!=null).ToList(),
             };
+            if (s.Selectors == null || s.Selectors.Count == 0)
+                return null;
+            if (s.Selectors != null && s.Selectors.Count == 1)
+                return s.Selectors[0];
             s.SetParsingSource(this);
             return s;
         }

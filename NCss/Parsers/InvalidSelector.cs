@@ -18,8 +18,10 @@ namespace NCss
             get { return false; }
         }
 
-        public override Selector Clone()
+        public override Selector Clone(Predicate<Selector> filter)
         {
+            if (filter != null)
+                return null;
             return this; // i'm immutable :)
         }
     }

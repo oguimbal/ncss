@@ -69,7 +69,7 @@ namespace NCss
 
         }
 
-        public abstract Rule Clone();
+        public abstract Rule Clone(Predicate<Selector> filter);
     }
 
     internal class OrphanBlockRule : Rule
@@ -88,8 +88,10 @@ namespace NCss
             get { return BodyType.Properties; }
         }
 
-        public override Rule Clone()
+        public override Rule Clone(Predicate<Selector> filter)
         {
+            if (filter != null)
+                return null;
             return this; // i'm immutable :)
         }
     }
@@ -151,14 +153,15 @@ namespace NCss
             }
         }
 
-        public override Rule Clone()
+        public override Rule Clone(Predicate<Selector> filter)
         {
             var r = new ClassRule
             {
-                ChildRules = ChildRules == null ? null : ChildRules.Select(x => x.Clone()).ToList(),
-                Selector = Selector == null ? null : Selector.Clone(),
+                Selector = Selector == null ? null : Selector.Clone(filter),
                 Properties = Properties == null ? null : Properties.Select(x=>x.Clone()).ToList(),
             };
+            if (filter != null && r.Selector == null)
+                return null;
             r.SetParsingSource(this);
             return r;
         }
@@ -242,14 +245,16 @@ namespace NCss
 
         }
 
-        public override Rule Clone()
+        public override Rule Clone(Predicate<Selector> filter)
         {
             var r = new DirectiveRule
             {
-                ChildRules = ChildRules == null ? null : ChildRules.Select(x => x.Clone()).ToList(),
-                Selector = Selector == null ? null : (DirectiveSelector)Selector.Clone(),
+                ChildRules = ChildRules == null ? null : ChildRules.Select(x => x.Clone(filter)).Where(x=>x!=null).ToList(),
+                Selector = Selector == null ? null : (DirectiveSelector)Selector.Clone(ExpectedBodyType == BodyType.Properties?filter:null),
                 Properties = Properties == null ? null : Properties.Select(x => x.Clone()).ToList(),
             };
+            if (filter != null && (r.ChildRules == null || r.ChildRules.Count == 0 || Selector ==null))
+                return null;
             r.SetParsingSource(this);
             return r;
         }
@@ -272,8 +277,10 @@ namespace NCss
             get { return BodyType.Properties; }
         }
 
-        public override Rule Clone()
+        public override Rule Clone(Predicate<Selector> filter)
         {
+            if (filter != null)
+                return null;
             return this; // i'm immutable :)
         }
     }

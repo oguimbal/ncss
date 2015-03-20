@@ -56,8 +56,10 @@ namespace NCss
         public string Attribute { get; set; }
         public Type ConditionType { get; set; }
         public string Value { get; set; }
-        public override Selector Clone()
+        public override Selector Clone(Predicate<Selector> filter)
         {
+            if (filter != null && !filter(this))
+                return null;
             var s = new AttributeCondition
             {
                 Attribute = Attribute,
