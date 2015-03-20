@@ -165,7 +165,8 @@ namespace NCss
                         var rule = Parse<T>(true);
                         if (rule == null)
                             _index = currentTokenIndex;
-                        block.Add(rule);
+                        else
+                            block.Add(rule);
                     }
 
                     if (currentTokenIndex == _index)
