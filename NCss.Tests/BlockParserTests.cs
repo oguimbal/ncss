@@ -51,29 +51,5 @@ namespace NCss.Tests
             Test(sh);
         }
 
-        [Test]
-        public void Hacks_WithStar()
-        {
-            var sh = ".cl{*prop:white;}";
-            var p = Test(sh);
-            Assert.True(p.Rules.Single().Properties.Single().HasStar);
-        }
-
-        [Test]
-        public void Hacks_With9()
-        {
-
-            var sh = "div{margin-top:1px\\9;}";
-            var p = Test(sh);
-            Assert.True(p.Rules.Single().Properties.Single().HasSlash9);
-        }
-
-        [Test]
-        public void IE_WithDxTransform()
-        {
-            var sh = "div{filter:progid:DXImageTransform.Microsoft.gradient(enabled=false);}";
-            Test(sh);
-        }
-
     }
 }

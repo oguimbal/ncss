@@ -32,10 +32,17 @@ namespace NCss
             }
 
             if (Important)
-                sb.Append(" !important");
+            {
+                if (string.IsNullOrWhiteSpace(BangHackName))
+                    sb.Append(" !important");
+                else
+                    sb.Append('!').Append(BangHackName);
+            }
 
             if (HasSlash9)
                 sb.Append("\\9");
+            if (HasSlash0)
+                sb.Append("\\0/");
             sb.Append(';');
         }
 
@@ -47,6 +54,8 @@ namespace NCss
                     return false;
                 if (Values == null || Values.Count == 0)
                     return false;
+                if (HasSlash0 && HasSlash9)
+                    return false;
                 return Values.All(x => x.IsValid) && !Values.Last().HasComma;
             }
         }
@@ -57,12 +66,21 @@ namespace NCss
         /// </summary>
         public bool HasStar { get; set; }
         /// <summary>
-        /// IE hack: Target only IE8 and below
+        /// IE hack: Target only IE8 and below using "property:value\9;"
         /// </summary>
         public bool HasSlash9 { get; set; }
+        /// <summary>
+        /// IE hack: Target IE8 only, using "property:value\0/;"
+        /// </summary>
+        public bool HasSlash0 { get; set; }
 
 
         public bool Important { get; set; }
+
+        /// <summary>
+        /// Only parsed successuflly by IE7 and below : "property:value!ie7;"
+        /// </summary>
+        public string BangHackName { get; set; }
     }
 
     public class NotParsableProperty : Property
@@ -125,21 +143,37 @@ namespace NCss
                     values.Add(v);
 
                 bool important = false;
+                string bangHackName = null;
                 if (!End && CurrentChar == '!')
                 {
                     Index++;
                     var imp = PickName();
-                    if (imp != "important")
-                    {
+                    if (imp == null)
                         AddError(ErrorCode.ExpectingToken, "important");
-                    }
                     else
                         important = true;
+
+                    if(imp != "important")
+                        bangHackName = imp;
                 }
 
-                var slashHack = !End && CurrentChar == '\\' && NextChar == '9';
-                if (slashHack)
+                bool hasSlash0 = false;
+                var hasSlash9 = !End && CurrentChar == '\\' && NextChar == '9';
+                if (hasSlash9)
                     Index += 2;
+                else
+                {
+                    hasSlash0 = !End && CurrentChar == '\\' && NextChar == '0';
+                    if (hasSlash0)
+                    {
+                        Index += 2;
+                        if (End || CurrentChar != '/')
+                            AddError(ErrorCode.ExpectingToken, "/");
+                        else
+                            Index++;
+                    }
+                }
+
 
                 if (!End)
                 {
@@ -155,7 +189,9 @@ namespace NCss
                     Name = name,
                     Values = values,
                     HasStar = starHack,
-                    HasSlash9 = slashHack,
+                    HasSlash9 = hasSlash9,
+                    HasSlash0 = hasSlash0,
+                    BangHackName = bangHackName,
                     Important = important,
                 };
             }

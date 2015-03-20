@@ -128,6 +128,12 @@ namespace NCss.Tests
             TestFile("facebook");
         }
 
+        [Test]
+        public void Stackoverflow()
+        {
+            TestFile("stackoverflow");
+        }
+
         void TestFile(string file)
         {
             var input = GetTestFile(file);
