@@ -58,8 +58,25 @@ namespace NCss.Tests
             Assert.IsTrue(not != null && not.IsValid, "invalid selector");
             Assert.AreEqual(":lang(en)", not.ToString());
             Assert.IsTrue(not.HasArgument);
-            Assert.AreEqual("en", not.Argument);
+            Assert.AreEqual("en", not.Argument.ToString());
             Assert.IsNull(not.SelectorArgument);
+        }
+
+        [Test]
+        public void NthChild()
+        {
+            var parser = new SimpleSelectorParser();
+            parser.SetContext(":nth-of-type(1n)");
+            var not = parser.DoParse();
+            Assert.IsTrue(parser.End);
+            Assert.AreEqual(0, parser.Errors.Count);
+            Assert.IsTrue(not != null && not.IsValid, "invalid selector");
+
+            parser.SetContext(":nth-of-type(3n+0)");
+            not = parser.DoParse();
+            Assert.IsTrue(parser.End);
+            Assert.AreEqual(0, parser.Errors.Count);
+            Assert.IsTrue(not != null && not.IsValid, "invalid selector");
         }
 
         [Test]

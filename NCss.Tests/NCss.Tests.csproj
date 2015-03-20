@@ -76,6 +76,9 @@
     <EmbeddedResource Include="RealTestsCss\stackoverflow.css" />
     <EmbeddedResource Include="RealTestsCss\gumby_min.css" />
     <EmbeddedResource Include="RealTestsCss\gumby.css" />
+    <EmbeddedResource Include="RealTestsCss\foundation.css" />
+    <EmbeddedResource Include="RealTestsCss\foundation.min.css" />
+    <EmbeddedResource Include="RealTestsCss\normalize.css" />
     <Content Include="tests.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

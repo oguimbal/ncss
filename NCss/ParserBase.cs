@@ -427,7 +427,7 @@ namespace NCss
 
         static readonly string[] units = { "%" , "px", "pt" // most used first
             ,"em", "mm", "cm"
-            , "deg", "rem", "grad", "rad", "turn", "ex", "hz", "in", "khz", "ms", "s", "pc", "vw", "vh", "vmin", "vmax" };
+            , "deg", "rem", "grad", "rad", "turn", "ex", "hz", "in", "khz", "ms", "s", "pc", "vw", "vh", "vmin", "vmax", "n" };
 
         protected string PickNumberWithUnit(params string[] onlyUnits)
         {

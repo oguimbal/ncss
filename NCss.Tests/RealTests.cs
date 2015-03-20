@@ -121,7 +121,7 @@ namespace NCss.Tests
             Assert.AreEqual(0, parser.Errors.Count);
             Assert.True(p.IsValid, "invalid css");
         }
-
+        
         [Test]
         public void LokadBootstrap()
         {
@@ -151,6 +151,14 @@ namespace NCss.Tests
         {
            TestFile("gumby_min");
            TestFile("gumby",false);
+        }
+
+        [Test]
+        public void Foundation()
+        {
+           TestFile("foundation.min");
+           TestFile("foundation",false);
+           TestFile("normalize",false);
         }
 
         Stylesheet TestFile(string file, bool testSimilarities=true)

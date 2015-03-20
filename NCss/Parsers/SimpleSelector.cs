@@ -89,9 +89,9 @@ namespace NCss
             get { return argument != null || selectorArgument != null; }
         }
 
-        string argument;
+        CssValue argument;
 
-        public string Argument
+        public CssValue Argument
         {
             get
             {
@@ -152,7 +152,7 @@ namespace NCss
                     return true;
                 if (SelectorArgument != null)
                     return SelectorArgument.IsValid;
-                return !string.IsNullOrWhiteSpace(Argument);
+                return Argument.IsValid;
             }
         }
     }
@@ -222,11 +222,16 @@ namespace NCss
                 {
                     Index++; // skip '('
                     // handle :lang(en) or :not(.selector)
-                    var arg = PickNameOrNumber();
                     Selector sel = null;
-                    if (arg == null)
+                    CssValue arg = null;
+                    if (name == "not")
                         sel = Parse<Selector>();
+                    else
+                        arg = Parse<CssValue>();
 
+                    if (arg == null && sel == null)
+                        AddError(ErrorCode.ExpectingValue, "argument");
+                    
                     if (!End && CurrentChar == ')')
                         Index++;
                     return new SimpleSelector
