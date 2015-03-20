@@ -55,5 +55,16 @@ namespace NCss.Tests
             Assert.AreEqual(".c1{prop:#ffff;}.c2{prop:red;}.c3{color:red;}", p.ToString(CssRestitution.RemoveErrors));
             Assert.AreEqual(".c1{}.c2{prop:red;}.c3{color:red;}", p.ToString(CssRestitution.RemoveInvalid));
         }
+
+        [Test]
+        public void FuckedUpSelectors()
+        {
+            var p = new CssParser().ParseSheet(".c1/c2, c3#c4{}");
+            Assert.AreEqual(".c1/c2,c3#c4{}", p.ToString(CssRestitution.OriginalWhenErrorOrInvalid));
+            Assert.AreEqual(".c1,c3#c4{}", p.ToString(CssRestitution.OnlyWhatYouUnderstood));
+            Assert.AreEqual(".c1,c3#c4{}", p.ToString(CssRestitution.RemoveErrors));
+            Assert.AreEqual(".c1,c3#c4{}", p.ToString(CssRestitution.RemoveInvalid));
+
+        }
     }
 }

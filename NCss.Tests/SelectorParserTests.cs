@@ -117,14 +117,16 @@ namespace NCss.Tests
             Assert.AreEqual(1, parser.Errors.Count);
             Assert.IsFalse(sel.IsValid);
             Assert.IsInstanceOf<InvalidSelector>(sel);
-            Assert.AreEqual("0x", sel.ToString());
+            Assert.AreEqual("", sel.ToString());
+            Assert.AreEqual("0x", sel.ToString(CssRestitution.OriginalWhenErrorOrInvalid));
 
             parser.SetContext("%x;");
             sel = parser.DoParse();
             Assert.AreEqual(1, parser.Errors.Count);
             Assert.IsFalse(sel.IsValid);
             Assert.IsInstanceOf<InvalidSelector>(sel);
-            Assert.AreEqual("%x", sel.ToString());
+            Assert.AreEqual("", sel.ToString());
+            Assert.AreEqual("%x", sel.ToString(CssRestitution.OriginalWhenErrorOrInvalid));
             Assert.AreEqual(';', parser.CurrentChar);
             
             parser.SetContext("1x.c");
@@ -137,7 +139,7 @@ namespace NCss.Tests
             Assert.AreEqual(2, lst.Count);
             Assert.IsInstanceOf<InvalidSelector>(lst[0]);
             Assert.IsInstanceOf<SimpleSelector>(lst[1]);
-            Assert.AreEqual("1x", lst[0].ToString());
+            Assert.AreEqual("1x", lst[0].ToString(CssRestitution.OriginalWhenErrorOrInvalid));
             Assert.AreEqual(".c", lst[1].ToString());
 
 
@@ -147,7 +149,7 @@ namespace NCss.Tests
             Assert.AreEqual(1, parser.Errors.Count);
             Assert.IsFalse(sel.IsValid);
             Assert.IsInstanceOf<InvalidSelector>(sel);
-            Assert.AreEqual("1x(.c)", sel.ToString());
+            Assert.AreEqual("1x(.c)", sel.ToString(CssRestitution.OriginalWhenErrorOrInvalid));
 
             parser.SetContext("1x(.c");
             sel = parser.DoParse();
@@ -155,7 +157,7 @@ namespace NCss.Tests
             Assert.AreEqual(1, parser.Errors.Count);
             Assert.IsFalse(sel.IsValid);
             Assert.IsInstanceOf<InvalidSelector>(sel);
-            Assert.AreEqual("1x(.c", sel.ToString());
+            Assert.AreEqual("1x(.c", sel.ToString(CssRestitution.OriginalWhenErrorOrInvalid));
 
             
             parser.SetContext("1x(.c).x");
@@ -168,7 +170,7 @@ namespace NCss.Tests
             Assert.AreEqual(2, lst.Count);
             Assert.IsInstanceOf<InvalidSelector>(lst[0]);
             Assert.IsInstanceOf<SimpleSelector>(lst[1]);
-            Assert.AreEqual("1x(.c)", lst[0].ToString());
+            Assert.AreEqual("1x(.c)", lst[0].ToString(CssRestitution.OriginalWhenErrorOrInvalid));
             Assert.AreEqual(".x", lst[1].ToString());
 
         }

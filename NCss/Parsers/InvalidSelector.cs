@@ -8,12 +8,9 @@ namespace NCss
 
     public class InvalidSelector : Selector
     {
-        public string Value { get; internal set; }
-
 
         internal override void AppendTo(StringBuilder sb)
         {
-            sb.Append(Value);
         }
 
         public override bool IsValid
@@ -37,7 +34,6 @@ namespace NCss
             internal override InvalidSelector DoParse()
             {
                 var c = CurrentChar;
-                var sb = new StringBuilder();
                 int braced = 0;
                 while (!Regex.IsMatch(c.ToString(), @"[\.\s#+>,~;{}]") || braced > 0)
                 {
@@ -45,17 +41,14 @@ namespace NCss
                         braced++;
                     if (braced > 0 && c == ')')
                         braced--;
-                    sb.Append(c);
+                    //sb.Append(c);
                     Index++;
                     if (End)
                         break;
                     c = CurrentChar;
                 }
 
-                return new InvalidSelector
-                {
-                    Value = sb.ToString()
-                };
+                return new InvalidSelector();
             }
         }
     }
