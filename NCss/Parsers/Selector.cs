@@ -267,7 +267,13 @@ namespace NCss
                                     throw new ParsingException("Expecting child selector"); // should never happen
                                 break;
                             }
-                            var sel = Parse<SimpleSelector>() ?? (Selector) Parse<InvalidSelector>();
+                            Selector sel = Parse<SimpleSelector>();
+                            if (sel == null)
+                            {
+                                if (lst.Conditions.Count == 0)
+                                    return null;
+                                sel = Parse<InvalidSelector>();
+                            }
                             lst.Conditions.Add(sel);
                             break;
                         // ========= separators ================
@@ -276,7 +282,10 @@ namespace NCss
                         case '+':
                             chainWith = Parse<ChildSelector>();
                             if (chainWith == null)
-                                throw new ParsingException("Expecting child selector"); // should never happen
+                            {
+                                AddError(ErrorCode.ExpectingToken, "child selector");
+                                return null;
+                            }
                             break;
                         case ',':
                         case ';':

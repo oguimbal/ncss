@@ -163,13 +163,42 @@ namespace NCss
                     {
                         currentTokenIndex = _index;
                         var rule = Parse<T>(true);
+                        if (rule == null)
+                            _index = currentTokenIndex;
                         block.Add(rule);
                     }
 
                     if (currentTokenIndex == _index)
                     {
-                        // should never happen
-                        throw new ParsingException("Nothing parsed");
+                        var oi = _index;
+                        if(!Skip("<!--") && !Skip("-->"))
+                            _index++;
+                        if (typeof (T) == typeof (Rule) || typeof (Rule).IsAssignableFrom(typeof (T)))
+                        {
+                            CssBlockToken bl = block.LastOrDefault() as NotParsableBlockRule;
+                            if (bl == null)
+                            {
+                                var err = AddError(ErrorCode.UnexpectedToken, css.Substring(oi,_index-oi));
+                                bl = new NotParsableBlockRule();
+                                bl.SetParsingSource(css, oi, _index, new List<CssParsingError> { err });
+                                block.Add((T) (object) bl);
+                            }
+                            else
+                                bl.SetParsingSource(css, bl.FromIndex, _index, bl.Errors);
+                        }
+                        else if (typeof (T) == typeof (Property) || typeof (Property).IsAssignableFrom(typeof (T)))
+                        {
+                            NotParsableProperty bl = block.LastOrDefault() as NotParsableProperty;
+                            if (bl == null)
+                            {
+                                var err = AddError(ErrorCode.UnexpectedToken, css.Substring(oi, _index - oi));
+                                bl = new NotParsableProperty();
+                                bl.SetParsingSource(css, _index - 1, _index, new List<CssParsingError> { err });
+                                block.Add((T)(object)bl);
+                            }
+                            else
+                                bl.SetParsingSource(css, bl.FromIndex, _index, bl.Errors);
+                        }
                     }
 
                     if (End)
@@ -554,6 +583,23 @@ namespace NCss
             return val;
         }
 
+        protected bool Skip(string str)
+        {
+            if (_index + str.Length > css.Length)
+                return false;
+            var oi = _index;
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (str[i] != css[_index])
+                {
+                    _index = oi;
+                    return false;
+                }
+                _index++;
+            }
+            Skip();
+            return true;
+        }
 
         [DebuggerStepThrough]
         protected void Skip()
@@ -670,7 +716,6 @@ namespace NCss
         ExpectingToken,
         UnexpectedToken,
         UnexpectedEnd,
-        InvalidSelector,
         ExpectingValue,
         ExpectingBody,
         BlockMismatch,

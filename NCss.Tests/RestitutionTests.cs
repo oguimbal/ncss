@@ -80,5 +80,18 @@ namespace NCss.Tests
             Assert.AreEqual(".test{}", p.ToString(CssRestitution.RemoveErrors));
             Assert.AreEqual(".test{}", p.ToString(CssRestitution.RemoveInvalid));
         }
+
+
+        [Test]
+        public void HtmlCommentOutOfNowhere()
+        {
+            var parser = new CssParser();
+            var p = parser.ParseSheet("<!-- .class{test:x;} -->");
+            Assert.AreEqual(4, parser.Errors.Count);
+            Assert.AreEqual("<!-- .class{test:x;}-->", p.ToString(CssRestitution.OriginalWhenErrorOrInvalid));
+            Assert.AreEqual(".class{test:x;}", p.ToString(CssRestitution.OnlyWhatYouUnderstood));
+            Assert.AreEqual(".class{test:x;}", p.ToString(CssRestitution.RemoveErrors));
+            Assert.AreEqual(".class{test:x;}", p.ToString(CssRestitution.RemoveInvalid));
+        }
     }
 }

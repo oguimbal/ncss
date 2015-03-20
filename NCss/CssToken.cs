@@ -26,6 +26,8 @@ namespace NCss
         int fromIndex;
         int toIndex;
 
+        public int FromIndex { get { return fromIndex; } }
+
         internal void SetParsingSource(CssToken sameAs)
         {
             this.globalCss = sameAs.globalCss;

@@ -44,9 +44,12 @@ namespace NCss
                         Index++; // will throw a block mismatch exception, and resume parsing after it.
                         throw new ParsingException("Unexpected token '}'"); // will never be thrown
                     default: // classic selector
+                        var sel = Parse<Selector>();
+                        if (sel == null)
+                            return null;
                         rule = new ClassRule
                         {
-                            Selector = Parse<Selector>() ?? Parse<InvalidSelector>(),
+                            Selector = sel,
                         };
                         break;
                 }
@@ -54,7 +57,7 @@ namespace NCss
                 if (End)
                 {
                     AddError(ErrorCode.UnexpectedEnd, "end of rule");
-                    return new ClassRule();
+                    return new NotParsableBlockRule();
                 }
 
                 if (rule.ExpectedBodyType == Rule.BodyType.None)

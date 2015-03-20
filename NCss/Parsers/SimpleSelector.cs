@@ -299,10 +299,7 @@ namespace NCss
                 }
 
                 if (type == null)
-                {
-                    AddError(ErrorCode.InvalidSelector, CurrentChar.ToString());
                     return null;
-                }
 
                 if (name == null)
                     name = PickName();
