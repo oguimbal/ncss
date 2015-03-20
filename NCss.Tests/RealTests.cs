@@ -111,6 +111,18 @@ namespace NCss.Tests
         }
 
         [Test]
+        public void GumbyComment()
+        {
+            var input = "@charset \"UTF-8\";\n/*  */\n@import url(url);";
+            var parser = new StylesheetParser();
+            parser.SetContext(input);
+            var p = parser.DoParse();
+            Assert.True(parser.End);
+            Assert.AreEqual(0, parser.Errors.Count);
+            Assert.True(p.IsValid, "invalid css");
+        }
+
+        [Test]
         public void LokadBootstrap()
         {
             TestFile("Lokad_Bootstrap");
@@ -134,7 +146,14 @@ namespace NCss.Tests
             TestFile("stackoverflow");
         }
 
-        void TestFile(string file)
+        [Test]
+        public void Gumby()
+        {
+           TestFile("gumby_min");
+           TestFile("gumby",false);
+        }
+
+        Stylesheet TestFile(string file, bool testSimilarities=true)
         {
             var input = GetTestFile(file);
             var parser = new StylesheetParser();
@@ -145,30 +164,35 @@ namespace NCss.Tests
             Assert.AreEqual(0, parser.Errors.Count);
             Assert.True(p.IsValid, "invalid css");
             var output = p.ToString();
-            Assert.AreEqual(input.Count(c => c == '{'), output.Count(c => c == '{'));
-            Assert.AreEqual(input.Count(c => c == '}'), output.Count(c => c == '}'));
 
-            foreach (var c in new[] {"{", ";\r"})
+            if (testSimilarities)
             {
-                string toReparse;
-                if (c == "{")
+                Assert.AreEqual(input.Count(c => c == '{'), output.Count(c => c == '{'));
+                Assert.AreEqual(input.Count(c => c == '}'), output.Count(c => c == '}'));
+                foreach (var c in new[] { "{", ";\r" })
                 {
-                    var reg = new Regex(@"(?<=\}[^\{\}\'\" + "\"" + @"+]+)\{", RegexOptions.Multiline | RegexOptions.Compiled);
-                    toReparse = reg.Replace(output, "/* some comment */{");
+                    string toReparse;
+                    if (c == "{")
+                    {
+                        var reg = new Regex(@"(?<=\}[^\{\}\'\" + "\"" + @"+]+)\{", RegexOptions.Multiline | RegexOptions.Compiled);
+                        toReparse = reg.Replace(output, "/* some comment */{");
+                    }
+                    else
+                    {
+                        var reg = new Regex(@"(?<!url\(data:[a-zA-Z\+/]+)\;", RegexOptions.Multiline | RegexOptions.Compiled);
+                        toReparse = reg.Replace(output, "/* some comment */;");
+                    }
+                    parser.SetContext(toReparse);
+                    var p2 = parser.DoParse();
+                    Assert.IsTrue(parser.End);
+                    Assert.AreEqual(0, parser.Errors.Count);
+                    Assert.True(p2.IsValid, "invalid css on reparse");
+                    var output2 = p2.ToString();
+                    Assert.AreEqual(output, output2);
                 }
-                else
-                {
-                    var reg = new Regex(@"(?<!url\(data:[a-zA-Z/]+)\;", RegexOptions.Multiline | RegexOptions.Compiled);
-                    toReparse = reg.Replace(output, "/* some comment */;");
-                }
-                parser.SetContext(toReparse);
-                var p2 = parser.DoParse();
-                Assert.IsTrue(parser.End);
-                Assert.AreEqual(0, parser.Errors.Count);
-                Assert.True(p2.IsValid, "invalid css on reparse");
-                var output2 = p2.ToString();
-                Assert.AreEqual(output, output2);
             }
+
+            return p;
         }
     }
 }

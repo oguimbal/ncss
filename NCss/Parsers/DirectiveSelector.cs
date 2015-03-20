@@ -46,13 +46,13 @@ namespace NCss
                         // => Their selectors may be invalid names like '0%' '10%'
                         return Rule.BodyType.ChildRules;
 
-                    case "page":
                     case "host":
                     case "media":
                     case "supports":
                     case "document": // does not exist... someday ?
                     case "-moz-document":
                         return Rule.BodyType.ChildRules;
+                    case "page":
                     case "counter":
                     case "font-face":
                     case "string":
@@ -108,8 +108,6 @@ namespace NCss
                 Index++;
                 var name = PickName();
                 var args = SkipUntil(';', '{');
-                if (!End && CurrentChar == ';')
-                    Index++; // skip ';'
                 return new DirectiveSelector
                 {
                     Name = string.IsNullOrWhiteSpace(name) ? null : name,

@@ -74,6 +74,8 @@
     <EmbeddedResource Include="RealTestsCss\materialize.css" />
     <EmbeddedResource Include="RealTestsCss\Lokad_Bootstrap.css" />
     <EmbeddedResource Include="RealTestsCss\stackoverflow.css" />
+    <EmbeddedResource Include="RealTestsCss\gumby_min.css" />
+    <EmbeddedResource Include="RealTestsCss\gumby.css" />
     <Content Include="tests.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

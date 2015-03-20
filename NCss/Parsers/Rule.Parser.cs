@@ -60,6 +60,8 @@ namespace NCss
                 {
                     if (CurrentChar != ';')
                         AddError(ErrorCode.ExpectingToken, ";");
+                    else
+                        Index++;
                     return rule;
                 }
 
