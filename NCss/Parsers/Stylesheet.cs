@@ -14,12 +14,17 @@ namespace NCss
             get { return Rules.All(x => x.IsValid); }
         }
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
-            if(Rules == null)
+            AppendToWithOptions(sb, CssRestitution.OnlyWhatYouUnderstood);
+        }
+
+        public override void AppendToWithOptions(StringBuilder sb, CssRestitution option)
+        {
+            if (Rules == null)
                 return;
-            foreach (var r in Rules.Where(x=>x!=null))
-                r.AppendTo(sb);
+            foreach (var r in Rules.Where(x => x != null))
+                r.AppendToWithOptions(sb, option);
         }
     }
 

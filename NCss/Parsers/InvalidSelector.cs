@@ -11,7 +11,7 @@ namespace NCss
         public string Value { get; internal set; }
 
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
             sb.Append(Value);
         }

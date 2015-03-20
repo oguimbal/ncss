@@ -25,7 +25,7 @@ namespace NCss
 
     internal class OrphanBlockRule : Rule
     {
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
             sb.Append(this.OriginalToken);
         }
@@ -43,17 +43,23 @@ namespace NCss
 
     internal class ClassRule : Rule
     {
-        public override void AppendTo(StringBuilder sb)
+        public override void AppendToWithOptions(StringBuilder sb, CssRestitution option)
         {
             if (Selector != null)
-                Selector.AppendTo(sb);
+                Selector.AppendToWithOptions(sb, option);
             sb.Append('{');
             if (Properties != null)
             {
                 foreach (var p in Properties)
-                    p.AppendTo(sb);
+                    p.AppendToWithOptions(sb, option);
             }
             sb.Append('}');
+        }
+
+
+        internal override void AppendTo(StringBuilder sb)
+        {
+            AppendToWithOptions(sb, CssRestitution.OnlyWhatYouUnderstood);
         }
 
         public override bool IsValid
@@ -82,7 +88,7 @@ namespace NCss
     public class DirectiveRule : Rule
     {
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
             if (Selector != null)
                 Selector.AppendTo(sb);
@@ -156,7 +162,7 @@ namespace NCss
             Css = css;
         }
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
             throw new NotImplementedException();
         }

@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CssParser.cs" />
+    <Compile Include="CssParsingError.cs" />
     <Compile Include="CssToken.cs" />
     <Compile Include="Parsers\ChildSelector.cs" />
     <Compile Include="Parsers\InvalidSelector.cs" />

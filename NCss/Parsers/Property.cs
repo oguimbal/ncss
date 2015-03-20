@@ -10,8 +10,9 @@ namespace NCss
         public string Name { get; set; }
         public List<CssValue> Values { get; set; }
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
+            var st = sb.Length;
             if (HasStar)
                 sb.Append('*');
             if (!string.IsNullOrWhiteSpace(Name))
@@ -43,7 +44,9 @@ namespace NCss
                 sb.Append("\\9");
             if (HasSlash0)
                 sb.Append("\\0/");
-            sb.Append(';');
+
+            if(sb.Length != st)
+                sb.Append(';');
         }
 
         public override bool IsValid
@@ -127,13 +130,22 @@ namespace NCss
 
                 var name = PickName();
                 if (name == null)
+                {
+                    AddError(ErrorCode.ExpectingToken, "property name");
                     return new NotParsableProperty(SkipTillEnd());
+                }
 
                 if (End)
+                {
+                    AddError(ErrorCode.UnexpectedEnd, "property value");
                     return new NotParsableProperty(name);
+                }
 
                 if (CurrentChar != ':')
-                    return new NotParsableProperty(name + SkipTillEnd());
+                {
+                    AddError(ErrorCode.ExpectingToken, ":");
+                    return new NotParsableProperty(name + SkipTillEnd());   
+                }
 
                 Index++;
 

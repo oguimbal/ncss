@@ -6,7 +6,7 @@ namespace NCss
 {
     public class DirectiveSelector : Selector
     {
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
             sb.Append("@");
             if (!string.IsNullOrWhiteSpace(Name))
@@ -20,7 +20,10 @@ namespace NCss
 
         public override bool IsValid
         {
-            get { return !string.IsNullOrWhiteSpace(Name); }
+            get
+            {
+                return !string.IsNullOrWhiteSpace(Name);
+            }
         }
 
         public string Name { get; set; }

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
@@ -25,11 +27,12 @@ namespace NCss
         int toIndex;
 
         [DebuggerStepThrough]
-        internal void SetParsingSource(string globalCss, int fromIndex, int toIndex)
+        internal void SetParsingSource(string globalCss, int fromIndex, int toIndex, List<CssParsingError> errors)
         {
             this.globalCss = globalCss;
             this.fromIndex = fromIndex;
             this.toIndex = toIndex;
+            Errors = errors;
         }
 
         /// <summary>
@@ -44,15 +47,46 @@ namespace NCss
                 return globalCss.Substring(fromIndex, toIndex - fromIndex);
             }
         }
+        
+        public List<CssParsingError> Errors { get; private set; }
+        public bool HasError { get { return Errors != null && Errors.Count > 0; } }
 
-        public abstract void AppendTo(StringBuilder sb);
+        internal abstract void AppendTo(StringBuilder sb);
         public abstract bool IsValid { get; }
+
+        public virtual void AppendToWithOptions(StringBuilder sb, CssRestitution options)
+        {
+            if (options.HasFlag(CssRestitution.RemoveErrors) && HasError
+                || options.HasFlag(CssRestitution.RemoveInvalid) && !IsValid)
+                return;
+            if (options.HasFlag(CssRestitution.OriginalWhenErrorOrInvalid) && (HasError || !IsValid))
+            {
+                sb.Append(OriginalToken);
+                return;
+            }
+
+            AppendTo(sb);
+        }
+
+        public string ToString(CssRestitution options)
+        {
+            var sb = new StringBuilder();
+            AppendToWithOptions(sb, options);
+            return sb.ToString();
+        }
 
         public override string ToString()
         {
-            var sb = new StringBuilder();
-            AppendTo(sb);
-            return sb.ToString();
+            return ToString(CssRestitution.OnlyWhatYouUnderstood);
         }
+    }
+
+    [Flags]
+    public enum CssRestitution
+    {
+        OnlyWhatYouUnderstood = 0,
+        RemoveErrors = 1,
+        RemoveInvalid = RemoveErrors | 1<<1,
+        OriginalWhenErrorOrInvalid = 1<<2,
     }
 }

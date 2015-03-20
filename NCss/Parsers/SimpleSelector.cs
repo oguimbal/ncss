@@ -122,7 +122,7 @@ namespace NCss
         }
 
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
             if (SelectorType == Type.PseudoElement)
                 sb.Append("::");

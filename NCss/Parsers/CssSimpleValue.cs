@@ -18,7 +18,7 @@ namespace NCss
         /// </summary>
         public List<CssValue> Arguments { get; set; }
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
             if (HasParenthesis)
                 sb.Append('(');
@@ -68,7 +68,7 @@ namespace NCss
                 if (Value[0] == '#')
                 {
                     // is valid color ?
-                    return Regex.IsMatch(Value, @"^#[a-fA-F0-9]{3,6}$");
+                    return Regex.IsMatch(Value, @"^#([a-fA-F0-9]{3}){1,2}$");
                 }
 
                 // is valid string ?

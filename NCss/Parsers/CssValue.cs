@@ -15,7 +15,7 @@ namespace NCss
 
     public class CssArithmeticOperation : CssValue
     {
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
             if (HasParenthesis)
                 sb.Append('(');

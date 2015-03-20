@@ -14,10 +14,15 @@ namespace NCss
     {
         public List<Selector> Conditions { get; set; }
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
+        {
+            AppendToWithOptions(sb, CssRestitution.OnlyWhatYouUnderstood);
+        }
+
+        public override void AppendToWithOptions(StringBuilder sb, CssRestitution option)
         {
             foreach (var c in Conditions)
-                c.AppendTo(sb);
+                c.AppendToWithOptions(sb, option);
         }
 
         public override bool IsValid
@@ -29,15 +34,20 @@ namespace NCss
     {
         public List<Selector> Selectors { get; set; }
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
-            bool notFirst=false;
-            foreach (var c in Selectors)
+            AppendToWithOptions(sb, CssRestitution.OnlyWhatYouUnderstood);
+        }
+
+        public override void AppendToWithOptions(StringBuilder sb, CssRestitution option)
+        {
+            bool notFirst = false;
+            foreach (var s in Selectors)
             {
                 if (notFirst)
                     sb.Append(',');
                 notFirst = true;
-                c.AppendTo(sb);
+                s.AppendToWithOptions(sb, option);
             }
         }
 

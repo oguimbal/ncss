@@ -19,7 +19,7 @@ namespace NCss
         public Selector Child { get; set; }
         public Selector Parent { get; set; }
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
             if (Parent != null)
                 Parent.AppendTo(sb);

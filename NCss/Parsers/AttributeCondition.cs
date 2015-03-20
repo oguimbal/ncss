@@ -18,7 +18,7 @@ namespace NCss
             Contains = '*',
         }
 
-        public override void AppendTo(StringBuilder sb)
+        internal override void AppendTo(StringBuilder sb)
         {
             sb.Append('[');
             if (!string.IsNullOrWhiteSpace(InvalidCondition))

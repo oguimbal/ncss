@@ -91,7 +91,7 @@ namespace NCss
 
                 var endIndex = Index;
                 if (ret != null)
-                    ret.SetParsingSource(this.css, startIndex, endIndex);
+                    ret.SetParsingSource(this.css, startIndex, endIndex,p.Errors);
                 Skip();
             }
             return ret;
@@ -406,10 +406,10 @@ namespace NCss
                 return null;
             var oi = _index;
             _index++;
-            // we're being permissive on how many chars they must be
+            // we're being permissive on how many chars they must be, and which they must be
             var sb = new StringBuilder();
             char c;
-            while (!End && ((c=CurrentChar) >= '0' && c <='9' || c>='a' && c<='f' || c>='A' && c<='F'))
+            while (!End && ((c=CurrentChar) >= '0' && c <='9' || c>='a' && c<='z' || c>='A' && c<='Z'))
             {
                 sb.Append(c);
                 _index++;
@@ -609,16 +609,15 @@ namespace NCss
             return false;
         }
 
-        public readonly List<string> Errors = new List<string>();
+        public readonly List<CssParsingError> Errors = new List<CssParsingError>();
         protected void AddError(ErrorCode code, string details)
         {
-            // todo: Error reporting
-            Errors.Add(code.ToString() + ": " + details);
+            Errors.Add(new CssParsingError(code, details, _index, ToString()));
         }
 
         public sealed override string ToString()
         {
-            const int maxlen = 100;
+            const int maxlen = 150;
             if (Index >= css.Length)
             {
                 var from = css.Length - maxlen - 1;
