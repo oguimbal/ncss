@@ -92,6 +92,18 @@ namespace NCss.Tests
             Assert.AreEqual(SimpleSelector.Type.ElementType, not.SelectorType);
         }
 
+        [Test]
+        public void Plus()
+        {
+            var parser = new SelectorParser();
+            parser.SetContext("li:first-of-type + li");
+            var not = parser.DoParse();
+            Assert.IsTrue(parser.End);
+            Assert.AreEqual(0, parser.Errors.Count);
+            Assert.IsTrue(not != null && not.IsValid, "invalid selector");
+            Assert.AreEqual("li:first-of-type+li", not.ToString());
+        }
+
         
 
         [Test]
