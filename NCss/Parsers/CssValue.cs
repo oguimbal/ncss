@@ -182,6 +182,11 @@ namespace NCss
                     var c = CurrentChar;
                     if (CssArithmeticOperation.Validops.Contains(c))
                     {
+                        if (WasWhitespace && NextChar != ' ')
+                        {
+                            // if we have something like "0px -5px", that's not an operation. "0px-5px" or "0px - 5px" are, though.
+                            break;
+                        }
                         Index++;
                         var v = Parse<CssSimpleValue>();
                         if (v == null)

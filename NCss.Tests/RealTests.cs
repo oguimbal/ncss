@@ -69,6 +69,19 @@ namespace NCss.Tests
             Assert.AreEqual(".class{color:red;}",p.Rules[1].ToString());
         }
 
+
+        [Test]
+        public void SeemsToBeAnOperation()
+        {
+            var input = ".class{background-position: 9px -20px;}";
+            var parser = new StylesheetParser();
+            parser.SetContext(input);
+            var p = parser.DoParse();
+            Assert.True(parser.End);
+            Assert.True(p.IsValid, "must be valid css");
+            Assert.AreEqual(".class{background-position:9px -20px;}", p.ToString());
+        }
+
         [Test]
         public void StringsInProperty()
         {
