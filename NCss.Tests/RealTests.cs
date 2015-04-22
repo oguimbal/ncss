@@ -83,6 +83,32 @@ namespace NCss.Tests
         }
 
         [Test]
+        public void SpaceIssue1()
+        {
+
+            var input = ".class{outline:5px auto -webkit-focus-ring-color;}";
+            var parser = new StylesheetParser();
+            parser.SetContext(input);
+            var p = parser.DoParse();
+            Assert.True(parser.End);
+            Assert.True(p.IsValid, "must be valid css");
+            Assert.AreEqual(".class{outline:5px auto -webkit-focus-ring-color;}", p.ToString());
+        }
+
+        [Test]
+        public void SpaceIssue2()
+        {
+
+            var input = ".class{-webkit-box-shadow:inset 0 -1px 0 rgba(0,0,0,0.15);}";
+            var parser = new StylesheetParser();
+            parser.SetContext(input);
+            var p = parser.DoParse();
+            Assert.True(parser.End);
+            Assert.True(p.IsValid, "must be valid css");
+            Assert.AreEqual(".class{-webkit-box-shadow:inset 0 -1px 0 rgba(0,0,0,0.15);}", p.ToString());
+        }
+
+        [Test]
         public void StringsInProperty()
         {
             // from materialize.css
