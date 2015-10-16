@@ -135,7 +135,5 @@ Assert.AreEqual(".cl1{}", sheet.ToString());
 # Donate
 
 My bitcoin address 
-146j s4Uj 9Dq9 
-tuik cSpZ Frbf 
-yriM pbWE sg
+**146j s4Uj 9Dq9 tuik cSpZ Frbf yriM pbWE sg**
 or via [the qrcode here](https://www.budyget.com/images/wallet.png)
