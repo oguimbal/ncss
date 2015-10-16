@@ -34,7 +34,7 @@ namespace NCss
 
     public class MultiConditionSelector : Selector
     {
-        public List<Selector> Conditions { get; set; }
+        public List<Selector> Conditions { get; set; } = new List<Selector>();
 
         internal override void AppendTo(StringBuilder sb)
         {
@@ -95,7 +95,7 @@ namespace NCss
     }
     public class SelectorList : Selector
     {
-        public List<Selector> Selectors { get; set; }
+        public List<Selector> Selectors { get; set; } = new List<Selector>();
 
         internal override void AppendTo(StringBuilder sb)
         {
@@ -174,10 +174,7 @@ namespace NCss
             {
                 if (End)
                     return null;
-                var lst = new SelectorList
-                {
-                    Selectors = new List<Selector>(),
-                };
+                var lst = new SelectorList();
 
                 bool expectingNext = false;
                 while (true)

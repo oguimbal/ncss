@@ -19,8 +19,7 @@ namespace NCss
             {
                 // ============ MUST NEVER RETURN NULL ======================
 
-
-                var lst = new List<Selector>();
+                
                 Rule rule;
                 //var w = GetWord();
                 switch (CurrentChar)

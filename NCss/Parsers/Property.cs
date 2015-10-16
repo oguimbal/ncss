@@ -10,7 +10,7 @@ namespace NCss
     public class Property : CssBlockToken
     {
         public string Name { get; set; }
-        public List<CssValue> Values { get; set; }
+        public List<CssValue> Values { get; set; } = new List<CssValue>();
 
         internal override void AppendTo(StringBuilder sb)
         {

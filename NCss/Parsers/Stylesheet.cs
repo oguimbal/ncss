@@ -9,7 +9,7 @@ namespace NCss
 {
     public class Stylesheet : CssToken
     {
-        public List<Rule> Rules { get; set; }
+        public List<Rule> Rules { get; set; } = new List<Rule>();
 
         public override bool IsValid
         {
@@ -115,19 +115,17 @@ namespace NCss
             internal override Stylesheet DoParse()
             {
                 var sh = new Stylesheet();
-                List<Rule> rules = new List<Rule>();
                 while (!End)
                 {
                     var ind = Index;
                     // supposted to be executed only once... But if some BlockMismatch exception happens, that's not the case.
                     // ... And we dont want to stop parsing on some crappy scenario (even if that's invalid CSS)
-                    rules.AddRange(ParseBlock<Rule>(false));
+                    sh.Rules.AddRange(ParseBlock<Rule>(false));
                     if (!End && Index == ind)
                     {
                         throw new ParsingException("Failed to parse to the end of CSS");
                     }
                 }
-                sh.Rules = rules;
                 return sh;
             }
         }

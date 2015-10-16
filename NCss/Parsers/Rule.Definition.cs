@@ -10,10 +10,10 @@ namespace NCss
     {
         internal Rule() { }
 
-        public List<Property> Properties { get; set; }
+        public List<Property> Properties { get; set; } = new List<Property>();
 
         internal abstract BodyType ExpectedBodyType { get; }
-        public List<Rule> ChildRules { get; set; }
+        public List<Rule> ChildRules { get; set; } = new List<Rule>();
 
         internal enum BodyType
         {

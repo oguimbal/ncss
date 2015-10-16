@@ -71,6 +71,41 @@ namespace NCss.Tests
 
 
         [Test]
+        public void ManuallyBuiltCss()
+        {
+            var sheet = new Stylesheet
+            {
+                Rules =
+                {
+                    new ClassRule
+                    {
+                        Selector = new SimpleSelector(".classname"),
+                        Properties =
+                        {
+                            new Property { Name = "color", Values = { new CssSimpleValue("#fff")} },
+                            new Property { Name = "background-image", Values = { new CssSimpleValue("url","test.png")} },
+                        }
+                    },
+                    new DirectiveRule
+                    {
+                        Selector = new DirectiveSelector{Name = "media",Arguments = "(max-width: 600px)",},
+                        ChildRules =
+                        {
+                            new ClassRule
+                            {
+                                Selector = new SimpleSelector(".mediaclass"),
+                                Properties = { new Property{Name = "opacity", HasStar = true, Values = {new CssSimpleValue("0.5")}}}
+                            }
+                        }
+                    }
+                }
+            };
+
+            Assert.That(sheet.IsValid);
+            Assert.AreEqual(@".classname{color:#fff;background-image:url(test.png);}@media (max-width: 600px){.mediaclass{*opacity:0.5;}}", sheet.ToString());
+        }
+
+        [Test]
         public void SeemsToBeAnOperation()
         {
             var input = ".class{background-position: 9px -20px;}";
