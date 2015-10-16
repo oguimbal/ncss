@@ -141,6 +141,12 @@ Assert.AreEqual(".cl1{}", sheet.ToString());
   Assert.AreEqual(@".classname{color:#fff;background-image:url(test.png);}@media (max-width: 600px){.mediaclass{*opacity:0.5;}}", sheet.ToString());
 ```
 
+# Links
+
+Other .Net parser libraries:
+
+- [CsCss](https://github.com/Athari/CsCss) Based on Mozilla Firefox parser. You wont get better if you're looking for a parser, but it does not support modification
+- [ExCss](https://github.com/TylerBrinks/ExCSS) Another library, but it stops parsing silently in some cases, and fails on invalid CSS (That's why I developped NCss).
 
 # Donate
 
