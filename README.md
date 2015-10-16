@@ -1,5 +1,7 @@
 # NCss is a small library aiming to parse and manipulate css sheets.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/6gmqjtw0gvkuggme?svg=true)](https://ci.appveyor.com/project/oguimbal/ncss)
+
 [Nuget package](https://www.nuget.org/packages/NCss)
 ```
   Install-Package NCss
