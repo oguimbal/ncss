@@ -13,6 +13,9 @@ NCss is a small library aiming to parse and manipulate css sheets.
 # Disclaimer
 I tried to focus on having a performant parser which does not create hundreds of thousands of substrings of the same string while parsing.
 
+NCss is not (yet?) aiming to be a strict and full-feature-browser-ready CSS parser (it skips some value parsing, for instance it only does some very basic value checking)... it's rather a parser that helps to manipulate and build sheets.
+But you're free to contribute :)
+
 You will not see any link to W3 doc or equivalent. 
 I'm not based on anything else apart my common sense, and a lot of real-life UTs: 
 **NCss is tested against complex CSS sheets** such as [boostrap](http://getbootstrap.com/) - among others. See [RealTests.css](https://github.com/oguimbal/ncss/blob/master/NCss.Tests/RealTests.cs).
