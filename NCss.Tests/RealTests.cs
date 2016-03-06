@@ -254,6 +254,12 @@ namespace NCss.Tests
         }
 
         [Test]
+        public void Hacks()
+        {
+            TestFile("hacks", false);
+        }
+
+        [Test]
         public void Foundation()
         {
            TestFile("foundation.min");

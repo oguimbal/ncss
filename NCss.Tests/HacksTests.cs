@@ -66,6 +66,17 @@ namespace NCss.Tests
         }
 
         [Test]
+        [Ignore("To be fixed ? that's a pretty shitty & useless one.")]
+        public void Safari2Opera925()
+        {
+            // Parsed as "* #catorce{color:red;}"
+            // ... but marked as invalid.
+            // When fixed, uncomment corresponding line in hacks.css
+            var sh = "*|html[xmlns*=\"\"] #catorce { color: red  }";
+            Test(sh);
+        }
+
+        [Test]
         public void IE7Only()
         {
             var sh = "*+html #div{height:300px;}";

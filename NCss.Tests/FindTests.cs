@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 
 namespace NCss.Tests
@@ -88,7 +89,5 @@ namespace NCss.Tests
             Assert.True(sheet.IsValid);
             Assert.AreEqual("@media test{.cl{bg:red;}}", sheet.ToString());
         }
-
-
     }
 }
