@@ -148,8 +148,3 @@ Other .Net parser libraries:
 - [CsCss](https://github.com/Athari/CsCss) Based on Mozilla Firefox parser. You wont get better if you're looking for a parser, but it does not support modification
 - [ExCss](https://github.com/TylerBrinks/ExCSS) Another library, but it stops parsing silently in some cases, and fails on invalid CSS (That's why I developped NCss).
 
-# Donate
-
-My bitcoin address 
-**146j s4Uj 9Dq9 tuik cSpZ Frbf yriM pbWE sg**
-or via [the qrcode here](https://www.budyget.com/images/wallet.png)
